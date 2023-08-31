@@ -1,11 +1,12 @@
 package polling
 
 import (
-	"fmt"
+	// "fmt"
 	"os"
 	"testing"
 
 	"github.com/aiteung/atdb"
+	"github.com/aiteung/module/model"
 )
 
 var MongoInfo = atdb.DBInfo{
@@ -15,14 +16,44 @@ var MongoInfo = atdb.DBInfo{
 
 var MongoConn = atdb.MongoConnect(MongoInfo)
 
-func TestPolling(t *testing.T) {
-	cek, err := GetNamaAndNomorKandidat(MongoConn) // Menggunakan MongoConn yang telah Anda inisialisasi sebelumnya
-	if err != nil {
-		t.Errorf("Error while getting kandidat: %v", err)
-		return
-	}
+var Pesan = model.IteungMessage{
+	Phone_number: "6289522910966",
+}
 
-	fmt.Println(cek)
+// func TestPolling(t *testing.T) {
+// 	cek, err := GetNamaAndNomorKandidat(MongoConn) // Menggunakan MongoConn yang telah Anda inisialisasi sebelumnya
+// 	if err != nil {
+// 		t.Errorf("Error while getting kandidat: %v", err)
+// 		return
+// 	}
+
+// 	fmt.Println(cek)
+// }
+
+// func TestPolling(t *testing.T) {
+// 	// Panggil fungsi pengujian
+// 	result := ListKandidatMessage(MongoConn)
+// 	fmt.Println(result)
+// }
+
+// func TestPolling(t *testing.T) {
+// 	// Panggil fungsi pengujian
+// 	result := Handler(Pesan, MongoConn)
+// 	fmt.Println(result)
+// }
+
+func TestPolling(t *testing.T) {
+	// Simulasikan pemilihan nomor urut
+	userInput := 2 // Ganti dengan nomor urut yang sesuai (1 atau 2)
+
+	// Panggil fungsi untuk memproses pemilihan
+	reply := HandleUserInput(Pesan, MongoConn, userInput)
+
+	// Buat asersi untuk memeriksa hasil balasan
+	expectedReply := "..." // Ganti dengan balasan yang diharapkan
+	if reply != expectedReply {
+		t.Errorf("Expected reply: %s, Got reply: %s", expectedReply, reply)
+	}
 }
 
 // func TestPolling(t *testing.T) {

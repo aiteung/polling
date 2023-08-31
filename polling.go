@@ -9,37 +9,46 @@ import (
 )
 
 func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
-	kandidat, _ := GetKandidat(mongoconn)
-	if kandidat != nil {
-		reply = PollingHandler(Pesan, mongoconn)
-	} else {
-		reply = NoPollingHandler(Pesan, mongoconn)
-	}
+	reply = ListKandidatMessage(mongoconn)
 	return
 }
 
-func NoPollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
-	return
-}
-
-func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
+func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
-	kandidat := GetKandidatFromPhoneNumber(mongoconn, Pesan.Phone_number)
+	// kandidat := GetKandidatFromPhoneNumber(mongoconn, Pesan.Phone_number)
 	if !reflect.ValueOf(alreadypolling).IsZero() {
-		reply = MessageSudahPolling(anggota, kandidat)
+		// Jika sudah melakukan polling sebelumnya, Anda mungkin ingin memberikan pesan yang sesuai di sini
+		reply = "Anda sudah melakukan polling sebelumnya."
 	} else {
-		id := InsertPolling(Pesan, "polling", mongoconn)
-		reply = MessagePolling(anggota, kandidat, id)
+		id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
+		selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
+		reply = MessagePolling(anggota, selectedKandidat, id)
 	}
 	return
 }
 
-func fillStructPolling(Pesan model.IteungMessage, Keterangan string, mongoconn *mongo.Database) (polling Polling) {
+func GetKandidatByIndex(mongoconn *mongo.Database, index int) (kandidat Kandidat) {
+	kandidatInfo, err := GetNamaAndNomorKandidat(mongoconn)
+	if err != nil || index < 0 || index >= len(kandidatInfo) {
+		// Handle error
+		return Kandidat{} // or an appropriate default value
+	}
+	return Kandidat{NamaKandidat: kandidatInfo[index].NamaKandidat, NomorKandidat: kandidatInfo[index].NomorKandidat}
+}
+
+func fillStructPolling(Pesan model.IteungMessage, Keterangan string, NomorKandidat string, mongoconn *mongo.Database) (polling Polling) {
 	polling.PhoneNumber = Pesan.Phone_number
 	polling.Keterangan = Keterangan
 	polling.Datetime = ConvertTimestampToJkt(time.Now())
 	polling.Keterangan = Keterangan
 	polling.Anggota = GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
+
+	// Get data kandidat based on the provided candidate number (NomorKandidat)
+	kandidatData := GetKandidatByNomorUrut(mongoconn, NomorKandidat) // Replace this with your actual function to get candidate data
+
+	// Fill the candidate information in the polling struct
+	polling.Kandidat = kandidatData
+
 	return polling
 }

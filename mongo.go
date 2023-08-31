@@ -31,6 +31,28 @@ func GetKandidat(db *mongo.Database) (data []Kandidat, err error) {
 	return data, nil
 }
 
+func GetKandidatByNomorUrut(mongoconn *mongo.Database, NomorKandidat string) (selectedKandidat Kandidat) {
+	kandidatCollection := mongoconn.Collection("kandidat")
+	filter := bson.M{"nomor_kandidat": NomorKandidat}
+
+	err := kandidatCollection.FindOne(context.TODO(), filter).Decode(&selectedKandidat)
+	if err != nil {
+		fmt.Printf("GetKandidatByNomorUrut: %v\n", err)
+	}
+
+	return selectedKandidat
+}
+
+func GetOnePresensi(NomorKandidat, db *mongo.Database) (data Kandidat) {
+	kandidat := db.Collection("kandidat")
+	filter := bson.M{"nomor_kandidat": NomorKandidat}
+	err := kandidat.FindOne(context.TODO(), filter).Decode(&data)
+	if err != nil {
+		fmt.Printf("Data Tidak Ada : %v\n", err)
+	}
+	return data
+}
+
 func GetNamaAndNomorKandidat(db *mongo.Database) (data []KandidatInfo, err error) {
 	kandidat := db.Collection("kandidat")
 	filter := bson.M{} // Empty filter to get all data
@@ -103,8 +125,8 @@ func GetPollingFromPhoneNumber(mongoconn *mongo.Database, phone_number string) (
 	return polling
 }
 
-func InsertPolling(Pesan model.IteungMessage, Keterangan string, mongoconn *mongo.Database) (InsertedID interface{}) {
-	insertResult, err := mongoconn.Collection("presensi").InsertOne(context.TODO(), fillStructPolling(Pesan, Keterangan, mongoconn))
+func InsertPolling(Pesan model.IteungMessage, Keterangan string, NomorKandidat string, mongoconn *mongo.Database) (InsertedID interface{}) {
+	insertResult, err := mongoconn.Collection("polling").InsertOne(context.TODO(), fillStructPolling(Pesan, Keterangan, NomorKandidat, mongoconn))
 	if err != nil {
 		fmt.Printf("InsertOneDoc: %v\n", err)
 	}
@@ -114,4 +136,17 @@ func InsertPolling(Pesan model.IteungMessage, Keterangan string, mongoconn *mong
 func ConvertTimestampToJkt(waktu time.Time) time.Time {
 	loc, _ := time.LoadLocation("Asia/Jakarta")
 	return waktu.In(loc)
+}
+
+func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, userInput int) (reply string) {
+	switch userInput {
+	case 1, 2:
+		kandidat := GetKandidatByIndex(mongoconn, userInput-1) // Convert user input to array index
+		anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
+		id := InsertPolling(Pesan, "polling", kandidat.NomorKandidat, mongoconn)
+		reply = MessagePolling(anggota, kandidat, id)
+	default:
+		reply = "Nomor urut kandidat tidak valid. Mohon pilih 1 atau 2."
+	}
+	return
 }
