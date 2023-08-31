@@ -16,14 +16,19 @@ func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string
 func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
-	// kandidat := GetKandidatFromPhoneNumber(mongoconn, Pesan.Phone_number)
+
 	if !reflect.ValueOf(alreadypolling).IsZero() {
-		// Jika sudah melakukan polling sebelumnya, Anda mungkin ingin memberikan pesan yang sesuai di sini
 		reply = "Anda sudah melakukan polling sebelumnya."
 	} else {
-		id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
-		selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
-		reply = MessagePolling(anggota, selectedKandidat, id)
+		// Memanggil HandleUserInput dengan nomor kandidat yang dipilih
+		reply = HandleUserInput(Pesan, mongoconn, selectedCandidate+1) // +1 karena indeks dimulai dari 0
+
+		// Hanya jika pemanggilan HandleUserInput berhasil, baru lanjutkan ke InsertPolling
+		if reply == "Terima kasih atas polling Anda!" {
+			id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
+			selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
+			reply = MessagePolling(anggota, selectedKandidat, id)
+		}
 	}
 	return
 }

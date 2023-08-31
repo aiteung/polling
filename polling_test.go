@@ -44,7 +44,7 @@ var Pesan = model.IteungMessage{
 
 func TestPolling(t *testing.T) {
 	// Simulasikan pemilihan nomor urut
-	userInput := 2 // Ganti dengan nomor urut yang sesuai (1 atau 2)
+	userInput := 3 // Ganti dengan nomor urut yang sesuai (1 atau 2)
 
 	// Panggil fungsi untuk memproses pemilihan
 	reply := HandleUserInput(Pesan, MongoConn, userInput)
