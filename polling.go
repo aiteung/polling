@@ -13,7 +13,7 @@ func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string
 	if strings.Contains(Pesan.Message, "ketua") {
 		reply = ListKandidatMessage(mongoconn)
 	} else if strings.Contains(Pesan.Message, "pilih") {
-		reply = PilihKandidat(Pesan.Message)
+		reply = PilihKandidat(Pesan.Message, Pesan, mongoconn)
 	} else {
 		reply = MintaQRCode()
 	}
