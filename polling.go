@@ -10,7 +10,7 @@ import (
 )
 
 func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
-	if strings.Contains(Pesan.Message, "minta") {
+	if strings.Contains(Pesan.Message, "ketua") {
 		reply = ListKandidatMessage(mongoconn)
 	} else if strings.Contains(Pesan.Message, "pilih") {
 		reply = PilihKandidat(Pesan.Message)
