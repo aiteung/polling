@@ -2,6 +2,7 @@ package polling
 
 import (
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/aiteung/module/model"
@@ -9,7 +10,11 @@ import (
 )
 
 func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
-	reply = ListKandidatMessage(mongoconn)
+	if strings.Contains(Pesan.Message, "minta") {
+		reply = ListKandidatMessage(mongoconn)
+	} else {
+		reply = "Terima Kasih sudah Memilih"
+	}
 	return
 }
 
