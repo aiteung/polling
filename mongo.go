@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"time"
 
 	"github.com/aiteung/module/model"
@@ -160,7 +161,9 @@ func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selec
 	return "Terima kasih atas polling Anda!"
 }
 
-func PilihKandidat(Message string) (reply string) {
-	reply = "Pilih Kandidat"
+func PilihKandidat(Teks string) (reply string) {
+	re := regexp.MustCompile("[0-9]+")
+	coba := re.FindAllString(Teks, -1)
+	reply = coba[0]
 	return
 }

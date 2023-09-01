@@ -57,9 +57,22 @@ var Pesan = model.IteungMessage{
 // 	}
 // }
 
+// func TestPolling(t *testing.T) {
+// 	// Panggil fungsi untuk memproses pemilihan
+// 	reply := ListKandidatMessage(MongoConn)
+// 	fmt.Println(reply)
+
+// 	// Buat asersi untuk memeriksa hasil balasan
+// 	// expectedReply := "..." // Ganti dengan balasan yang diharapkan
+// 	// if reply != expectedReply {
+// 	// 	t.Errorf("Expected reply: %s, Got reply: %s", expectedReply, reply)
+// 	// }
+// }
+
 func TestPolling(t *testing.T) {
 	// Panggil fungsi untuk memproses pemilihan
-	reply := ListKandidatMessage(MongoConn)
+	message := "Iteung pilih calon kandidat 1"
+	reply := PilihKandidat(message)
 	fmt.Println(reply)
 
 	// Buat asersi untuk memeriksa hasil balasan
