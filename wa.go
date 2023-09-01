@@ -39,5 +39,5 @@ func ListKandidatMessage(mongoconn *mongo.Database) string {
 
 func MintaQRCode() string {
 	msg := "Silahkan klik link dibawah ini\n"
-	return msg + "https://getqr.github.io/#https://wa.me/628112000279?text=Iteung%20minta%20qr%20code%20pemilihan%20iai"
+	return msg + "https://getqr.github.io/#https://wa.me/628112000279?text=Iteung%20minta%20kandidat%20ketua%20iai"
 }
