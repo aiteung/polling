@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"time"
 
@@ -44,7 +45,7 @@ func GetKandidatByNomorUrut(mongoconn *mongo.Database, NomorKandidat string) (se
 	return selectedKandidat
 }
 
-func GetOnePresensi(NomorKandidat, db *mongo.Database) (data Kandidat) {
+func GetOneKandidat(NomorKandidat, db *mongo.Database) (data Kandidat) {
 	kandidat := db.Collection("kandidat")
 	filter := bson.M{"nomor_kandidat": NomorKandidat}
 	err := kandidat.FindOne(context.TODO(), filter).Decode(&data)
@@ -119,9 +120,9 @@ func GetKandidatFromPhoneNumber(mongoconn *mongo.Database, phone_number string) 
 func GetPollingFromPhoneNumber(mongoconn *mongo.Database, phone_number string) (polling Polling) {
 	poll := mongoconn.Collection("polling")
 	filter := bson.M{"phone_number": phone_number}
-	err := poll.FindOne(context.TODO(), filter).Decode(&poll)
+	err := poll.FindOne(context.TODO(), filter).Decode(&polling) // Mengganti variabel poll dengan polling
 	if err != nil {
-		fmt.Printf("GetPollingTodayFromPhoneNumber: %v\n", err)
+		fmt.Printf("GetPollingFromPhoneNumber: %v\n", err)
 	}
 	return polling
 }
@@ -164,15 +165,16 @@ func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selec
 func PilihKandidat(Teks string, Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
 	re := regexp.MustCompile("[0-9]+")
 	coba := re.FindAllString(Teks, -1)
-	if len(coba) > 0 {
+	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
+	if !reflect.ValueOf(alreadypolling).IsZero() {
+		return "Anda sudah melakukan polling sebelumnya."
+	} else {
 		nomorKandidat := coba[0]
 		reply = "Terima kasih telah memilih kandidat nomor " + nomorKandidat
 
 		// Panggil fungsi InsertPolling untuk menyimpan data ke database
 		InsertedID := InsertPolling(Pesan, "polling", nomorKandidat, mongoconn)
 		fmt.Printf("Data polling disimpan dengan ID: %v\n", InsertedID)
-	} else {
-		reply = "Tidak dapat menemukan nomor kandidat dalam teks"
 	}
 	return
 }

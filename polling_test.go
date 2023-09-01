@@ -70,10 +70,15 @@ var Pesan = model.IteungMessage{
 // 	// }
 // }
 
+// func TestPolling(t *testing.T) {
+// 	// Panggil fungsi untuk memproses pemilihan
+// 	message := "Iteung pilih calon kandidat 1"
+// 	reply := PilihKandidat(message, Pesan, MongoConn)
+// 	fmt.Println(reply)
+// }
+
 func TestPolling(t *testing.T) {
-	// Panggil fungsi untuk memproses pemilihan
-	message := "Iteung pilih calon kandidat 1"
-	reply := PilihKandidat(message, Pesan, MongoConn)
+	reply, _ := GetNamaAndNomorKandidat(MongoConn)
 	fmt.Println(reply)
 }
 
