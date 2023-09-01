@@ -138,15 +138,24 @@ func ConvertTimestampToJkt(waktu time.Time) time.Time {
 	return waktu.In(loc)
 }
 
-func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, userInput int) (reply string) {
-	switch userInput {
-	case 1, 2:
-		kandidat := GetKandidatByIndex(mongoconn, userInput-1) // Convert user input to array index
-		anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
-		id := InsertPolling(Pesan, "polling", kandidat.NomorKandidat, mongoconn)
-		reply = MessagePolling(anggota, kandidat, id)
-	default:
-		reply = "Nomor urut kandidat tidak valid. Mohon pilih 1 atau 2."
+func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
+	if selectedCandidate < 1 {
+		return "Nomor kandidat tidak valid."
 	}
-	return
+
+	kandidatInfo, err := GetNamaAndNomorKandidat(mongoconn)
+	if err != nil || selectedCandidate > len(kandidatInfo) {
+		return "Nomor kandidat tidak valid."
+	}
+
+	// Dapatkan data kandidat berdasarkan nomor kandidat yang dipilih
+	selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate-1) // -1 karena indeks dimulai dari 0
+
+	// Memanggil InsertPolling untuk menyimpan data pemilihan ke dalam database
+	id := InsertPolling(Pesan, "polling", selectedKandidat.NomorKandidat, mongoconn)
+	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
+	kandidat := GetKandidatByIndex(mongoconn, selectedCandidate-1)
+	reply = MessagePolling(anggota, kandidat, id)
+
+	return "Terima kasih atas polling Anda!"
 }

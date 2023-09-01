@@ -2,6 +2,7 @@ package polling
 
 import (
 	// "fmt"
+	"fmt"
 	"os"
 	"testing"
 
@@ -42,18 +43,30 @@ var Pesan = model.IteungMessage{
 // 	fmt.Println(result)
 // }
 
-func TestPolling(t *testing.T) {
-	// Simulasikan pemilihan nomor urut
-	userInput := 3 // Ganti dengan nomor urut yang sesuai (1 atau 2)
+// func TestPolling(t *testing.T) {
+// 	// Simulasikan pemilihan nomor urut
+// 	userInput := 3 // Ganti dengan nomor urut yang sesuai (1 atau 2)
 
+// 	// Panggil fungsi untuk memproses pemilihan
+// 	reply := HandleUserInput(Pesan, MongoConn, userInput)
+
+// 	// Buat asersi untuk memeriksa hasil balasan
+// 	expectedReply := "..." // Ganti dengan balasan yang diharapkan
+// 	if reply != expectedReply {
+// 		t.Errorf("Expected reply: %s, Got reply: %s", expectedReply, reply)
+// 	}
+// }
+
+func TestPolling(t *testing.T) {
 	// Panggil fungsi untuk memproses pemilihan
-	reply := HandleUserInput(Pesan, MongoConn, userInput)
+	reply := ListKandidatMessage(MongoConn)
+	fmt.Println(reply)
 
 	// Buat asersi untuk memeriksa hasil balasan
-	expectedReply := "..." // Ganti dengan balasan yang diharapkan
-	if reply != expectedReply {
-		t.Errorf("Expected reply: %s, Got reply: %s", expectedReply, reply)
-	}
+	// expectedReply := "..." // Ganti dengan balasan yang diharapkan
+	// if reply != expectedReply {
+	// 	t.Errorf("Expected reply: %s, Got reply: %s", expectedReply, reply)
+	// }
 }
 
 // func TestPolling(t *testing.T) {

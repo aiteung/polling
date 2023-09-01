@@ -13,24 +13,44 @@ func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string
 	return
 }
 
-func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
+// func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
+// 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
+// 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
+
+// 	if !reflect.ValueOf(alreadypolling).IsZero() {
+// 		reply = "Anda sudah melakukan polling sebelumnya."
+// 	} else {
+// 		// Memanggil HandleUserInput dengan nomor kandidat yang dipilih
+// 		reply = HandleUserInput(Pesan, mongoconn, selectedCandidate+1) // +1 karena indeks dimulai dari 0
+
+// 		// Hanya jika pemanggilan HandleUserInput berhasil, baru lanjutkan ke InsertPolling
+// 		if reply == "Terima kasih atas polling Anda!" {
+// 			id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
+// 			selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
+// 			reply = MessagePolling(anggota, selectedKandidat, id)
+// 		}
+// 	}
+// 	return
+// }
+
+func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) string {
 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
 
 	if !reflect.ValueOf(alreadypolling).IsZero() {
-		reply = "Anda sudah melakukan polling sebelumnya."
-	} else {
-		// Memanggil HandleUserInput dengan nomor kandidat yang dipilih
-		reply = HandleUserInput(Pesan, mongoconn, selectedCandidate+1) // +1 karena indeks dimulai dari 0
-
-		// Hanya jika pemanggilan HandleUserInput berhasil, baru lanjutkan ke InsertPolling
-		if reply == "Terima kasih atas polling Anda!" {
-			id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
-			selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
-			reply = MessagePolling(anggota, selectedKandidat, id)
-		}
+		return "Anda sudah melakukan polling sebelumnya."
 	}
-	return
+
+	// Memanggil HandleUserInput dengan nomor kandidat yang dipilih
+	reply := HandleUserInput(Pesan, mongoconn, selectedCandidate)
+
+	if reply == "Terima kasih atas polling Anda!" {
+		id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
+		selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
+		reply = MessagePolling(anggota, selectedKandidat, id)
+	}
+
+	return reply
 }
 
 func GetKandidatByIndex(mongoconn *mongo.Database, index int) (kandidat Kandidat) {

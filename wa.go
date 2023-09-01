@@ -2,6 +2,7 @@ package polling
 
 import (
 	"fmt"
+	"strings"
 
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -22,15 +23,16 @@ func MessageSudahPolling(anggota Anggota, kandidat Kandidat) string {
 func ListKandidatMessage(mongoconn *mongo.Database) string {
 	kandidatInfo, err := GetNamaAndNomorKandidat(mongoconn)
 	if err != nil {
-		// Handle error
-		return "Maaf, terjadi kesalahan."
+		return "Maaf, terjadi kesalahan saat mengambil data kandidat."
 	}
 
-	msg := "Silahkan pilih kandidat yang menurut kakak memenuhi untuk menjadi ketua:\n"
+	var messageBuilder strings.Builder
+	messageBuilder.WriteString("Pilih kandidat dengan mengklik salah satu tautan di bawah ini:\n\n")
+
 	for idx, kandidat := range kandidatInfo {
-		msg += fmt.Sprintf("%d. %s\n", idx+1, kandidat.NamaKandidat)
+		link := fmt.Sprintf("[Kandidat %s](https://api.whatsapp.com/send?phone=628112000279&text=Iteung+pilih+calon+kandidat+%d)", kandidat.NamaKandidat, idx+1)
+		messageBuilder.WriteString(fmt.Sprintf("%d. %s\n", idx+1, link))
 	}
 
-	msg += "Gunakan hak suara anda sebaik-baiknya, terima kasih."
-	return msg
+	return messageBuilder.String()
 }
