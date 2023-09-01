@@ -13,7 +13,7 @@ func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string
 	if strings.Contains(Pesan.Message, "minta") {
 		reply = ListKandidatMessage(mongoconn)
 	} else {
-		reply = "Terima Kasih sudah Memilih"
+		reply = PilihKandidat(Pesan.Message)
 	}
 	return
 }
