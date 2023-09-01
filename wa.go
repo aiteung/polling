@@ -30,7 +30,7 @@ func ListKandidatMessage(mongoconn *mongo.Database) string {
 	messageBuilder.WriteString("Pilih kandidat dengan mengklik salah satu tautan di bawah ini:\n\n")
 
 	for idx, kandidat := range kandidatInfo {
-		link := fmt.Sprintf("[Kandidat %s](https://api.whatsapp.com/send?phone=628112000279&text=Iteung+pilih+kandidat+calon+%d)", strings.ReplaceAll(kandidat.NamaKandidat, " ", "%20"), idx+1)
+		link := fmt.Sprintf("[Kandidat %s](https://api.whatsapp.com/send?phone=628112000279&text=Iteung+pilih+calon+kandidat+%d)", kandidat.NamaKandidat, idx+1)
 		messageBuilder.WriteString(fmt.Sprintf("%d. %s\n", idx+1, link))
 	}
 

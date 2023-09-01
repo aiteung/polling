@@ -159,3 +159,8 @@ func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selec
 
 	return "Terima kasih atas polling Anda!"
 }
+
+func PilihKandidat(Message string) (reply string) {
+	reply = "Pilih Kandidat"
+	return
+}
