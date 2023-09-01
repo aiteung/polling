@@ -164,6 +164,6 @@ func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selec
 func PilihKandidat(Teks string) (reply string) {
 	re := regexp.MustCompile("[0-9]+")
 	coba := re.FindAllString(Teks, -1)
-	reply = coba[0]
+	reply = "Terima kasih telah memilih kandidat nomor " + coba[0]
 	return
 }

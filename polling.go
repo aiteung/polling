@@ -12,31 +12,13 @@ import (
 func Handler(Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
 	if strings.Contains(Pesan.Message, "minta") {
 		reply = ListKandidatMessage(mongoconn)
-	} else {
+	} else if strings.Contains(Pesan.Message, "pilih") {
 		reply = PilihKandidat(Pesan.Message)
+	} else {
+		reply = MintaQRCode()
 	}
 	return
 }
-
-// func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) (reply string) {
-// 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
-// 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
-
-// 	if !reflect.ValueOf(alreadypolling).IsZero() {
-// 		reply = "Anda sudah melakukan polling sebelumnya."
-// 	} else {
-// 		// Memanggil HandleUserInput dengan nomor kandidat yang dipilih
-// 		reply = HandleUserInput(Pesan, mongoconn, selectedCandidate+1) // +1 karena indeks dimulai dari 0
-
-// 		// Hanya jika pemanggilan HandleUserInput berhasil, baru lanjutkan ke InsertPolling
-// 		if reply == "Terima kasih atas polling Anda!" {
-// 			id := InsertPolling(Pesan, "polling", GetKandidatByIndex(mongoconn, selectedCandidate).NomorKandidat, mongoconn)
-// 			selectedKandidat := GetKandidatByIndex(mongoconn, selectedCandidate)
-// 			reply = MessagePolling(anggota, selectedKandidat, id)
-// 		}
-// 	}
-// 	return
-// }
 
 func PollingHandler(Pesan model.IteungMessage, mongoconn *mongo.Database, selectedCandidate int) string {
 	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)

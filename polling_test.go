@@ -2,6 +2,7 @@ package polling
 
 import (
 	// "fmt"
+	// "fmt"
 	"fmt"
 	"os"
 	"testing"
@@ -74,6 +75,8 @@ func TestPolling(t *testing.T) {
 	message := "Iteung pilih calon kandidat 1"
 	reply := PilihKandidat(message)
 	fmt.Println(reply)
+	// test := MintaQRCode()
+	// fmt.Println(test)
 
 	// Buat asersi untuk memeriksa hasil balasan
 	// expectedReply := "..." // Ganti dengan balasan yang diharapkan
