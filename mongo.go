@@ -165,16 +165,15 @@ func HandleUserInput(Pesan model.IteungMessage, mongoconn *mongo.Database, selec
 func PilihKandidat(Teks string, Pesan model.IteungMessage, mongoconn *mongo.Database) (reply string) {
 	re := regexp.MustCompile("[0-9]+")
 	coba := re.FindAllString(Teks, -1)
+	nomorKandidat := coba[0]
+	anggota := GetAnggotaFromPhoneNumber(mongoconn, Pesan.Phone_number)
+	kandidat := GetKandidatByNomorUrut(mongoconn, nomorKandidat)
 	alreadypolling := GetPollingFromPhoneNumber(mongoconn, Pesan.Phone_number)
 	if !reflect.ValueOf(alreadypolling).IsZero() {
-		return "Anda sudah melakukan polling sebelumnya."
+		reply = MessageSudahPolling(anggota, kandidat)
 	} else {
-		nomorKandidat := coba[0]
-		reply = "Terima kasih telah memilih kandidat nomor " + nomorKandidat
-
-		// Panggil fungsi InsertPolling untuk menyimpan data ke database
 		InsertedID := InsertPolling(Pesan, "polling", nomorKandidat, mongoconn)
-		fmt.Printf("Data polling disimpan dengan ID: %v\n", InsertedID)
+		reply = MessagePolling(anggota, kandidat, InsertedID)
 	}
 	return
 }
